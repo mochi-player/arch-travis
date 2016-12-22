@@ -317,9 +317,7 @@ build_scripts() {
 
 # install packages defined in .travis.yml
 install_packages() {
-  for package in "${CONFIG_PACKAGES[@]}"; do
-    _pacaur $package
-  done
+  _pacaur "${CONFIG_PACKAGES[@]}"
 }
 
 # install custom compiler if CC != gcc
