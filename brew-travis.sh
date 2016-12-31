@@ -22,6 +22,15 @@ travis_yml() {
   ruby -ryaml -e 'puts ARGV[1..-1].inject(YAML.load(File.read(ARGV[0]))) {|acc, key| acc[key] }' .travis.yml $@
 }
 
+run() {
+  "$@"
+  local ret=$?
+
+  if [ $ret -gt 0 ]; then
+    exit $ret
+  fi
+}
+
 read_config() {
     local old_ifs=$IFS
     IFS=$'\n'
@@ -34,7 +43,7 @@ read_config() {
 build_scripts() {
   if [ ${#CONFIG_BUILD_SCRIPTS[@]} -gt 0 ]; then
     for script in "${CONFIG_BUILD_SCRIPTS[@]}"; do
-      $script
+      run $script
     done
   else
     echo "No build scripts defined"
@@ -45,9 +54,7 @@ build_scripts() {
 # install packages defined in .travis.yml
 install_packages() {
   brew update
-  for package in "${CONFIG_PACKAGES[@]}"; do
-    brew install $package
-  done
+  brew install "${CONFIG_PACKAGES[@]}"
 }
 
 read_config
