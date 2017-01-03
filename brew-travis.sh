@@ -31,6 +31,11 @@ run() {
   fi
 }
 
+as_normal() {
+  local cmd="$@"
+  run /bin/bash -c "$cmd"
+}
+
 read_config() {
     local old_ifs=$IFS
     IFS=$'\n'
@@ -43,7 +48,7 @@ read_config() {
 build_scripts() {
   if [ ${#CONFIG_BUILD_SCRIPTS[@]} -gt 0 ]; then
     for script in "${CONFIG_BUILD_SCRIPTS[@]}"; do
-      run $script
+      as_normal $script
     done
   else
     echo "No build scripts defined"
@@ -53,8 +58,8 @@ build_scripts() {
 
 # install packages defined in .travis.yml
 install_packages() {
-  brew update
-  brew install "${CONFIG_PACKAGES[@]}"
+  as_normal "brew update"
+  as_normal "brew install ${CONFIG_PACKAGES[@]}"
 }
 
 read_config
